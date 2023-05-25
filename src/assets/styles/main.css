@@ -1,2 +1,24 @@
 @import './reset.css';
 
+:root {
+  --blue: 238 40% 58%;
+  --red: 358 79% 66%;
+  --grey-blue: 239 57% 85%;
+  --light-red: 357 100% 86%;
+
+  --dark-blue: 212 24% 26%;
+  --grey-blue: 211 10% 45%;
+  --light-grey: 223 19% 93%;
+  --lighter-grey: 228 33% 97%;
+  --white: 0 0% 100%;
+
+  --fs-base: 16px;
+  --ff-base: 'Rubik', sans-serif;
+}
+
+body {
+  background-color: hsl(var(--light-grey));
+  font-family: var(--ff-base);
+  color: hsl(var(--grey-blue));
+}
+
