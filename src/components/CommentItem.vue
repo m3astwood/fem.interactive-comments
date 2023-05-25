@@ -1,5 +1,7 @@
 <script setup>
+  import { useSlots } from 'vue';
   
+  const slots = useSlots();
 </script>
 
 <template>
@@ -8,28 +10,44 @@
       <div class="logo">
         <img src="../assets/images/avatars/image-amyrobson.png" alt="profile piture of amyrobson">
       </div>
-      <h3 class="commenter">amyrobson</h3>
-      <span class="date">1 month ago</span>
+      <h3 class="commenter">
+        <slot name="commenter"></slot>
+      </h3>
+      <span class="date">
+        <slot name="date"></slot>
+      </span>
     </header>
     <div class="content">
-      <p>
-        Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You've nailed the design and the responsiveness at various breakpoints works really well.
-      </p>
+      <span v-if="slots.replyTo" class="replyTo">
+        <slot name="replyTo"></slot>
+      </span>
+      <slot name="content"></slot>
     </div>
     <div class="controls">
       <div class="vote">
         <button>+</button>
-        <span class="val">0</span>
+        <span class="val">
+          <slot name="score"></slot>
+        </span>
         <button>-</button>
       </div>
       <button>Reply</button>
     </div>
   </div>
+
+  <div v-if="slots.replies" class="replies">
+    <slot name="replies"></slot>
+  </div>
 </template>
 
 <style scoped>
-.comment {
+.comment, .replies {
   --prim-color: black;
+  --highlight-color: blue;
+  --secondary-color: lightgrey;
+}
+
+.comment {
   background-color: white;
   padding: 1em;
   border-radius: 0.5em;
@@ -62,5 +80,37 @@ header {
 
 .controls > button:first-of-type {
   margin-inline-start: auto;
+}
+
+.replies {
+  position: relative;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 1em;
+  padding-inline-start: 1em;
+}
+
+.replies::before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0.2em;
+  background-color: var(--secondary-color);
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.replyTo {
+  font-weight: 500;
+  color: var(--highlight-color);
+}
+
+.replyTo::before {
+  content: '@';
+}
+
+.replyTo::after {
+  content: ' ';
 }
 </style>
