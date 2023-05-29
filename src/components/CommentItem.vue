@@ -1,12 +1,18 @@
 <script setup>
   import { useSlots } from 'vue';
   import VoteTool from './VoteTool.vue';
+  import ButtonText from './ButtonText.vue';
+  import ReplyIcon from '../assets/images/icon-reply.svg';
 
   const props = defineProps({
     score: { type: Number }
   });
   
   const slots = useSlots();
+
+  function test() {
+    console.log('click reply');
+  }
 </script>
 
 <template>
@@ -30,7 +36,7 @@
     </div>
     <div class="controls">
       <VoteTool :score="props.score" />
-      <button>Reply</button>
+      <ButtonText @click="test" :icon="ReplyIcon">Reply</ButtonText>
     </div>
   </div>
 
