@@ -1,5 +1,10 @@
 <script setup>
   import { useSlots } from 'vue';
+  import VoteTool from './VoteTool.vue';
+
+  const props = defineProps({
+    score: { type: Number }
+  });
   
   const slots = useSlots();
 </script>
@@ -8,7 +13,7 @@
   <div class="comment">
     <header>
       <div class="logo">
-        <img src="../assets/images/avatars/image-amyrobson.png" alt="profile piture of amyrobson">
+        <slot name="avatar"></slot>
       </div>
       <h3 class="commenter">
         <slot name="commenter"></slot>
@@ -24,13 +29,7 @@
       <slot name="content"></slot>
     </div>
     <div class="controls">
-      <div class="vote">
-        <button>+</button>
-        <span class="val">
-          <slot name="score"></slot>
-        </span>
-        <button>-</button>
-      </div>
+      <VoteTool :score="props.score" />
       <button>Reply</button>
     </div>
   </div>
