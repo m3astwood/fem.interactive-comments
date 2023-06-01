@@ -37,13 +37,14 @@
     padding: 0.5em;
     width: 100%;
     border-radius: 0.5em;
+    resize: none;
     border: thin solid lightgrey;
   }
 
   footer {
     display: flex;
     align-items: center;
-    margin-block-start: 0.5em;
+    margin-block-start: 0.75em;
   }
 
   footer > button {
