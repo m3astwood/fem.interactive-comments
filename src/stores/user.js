@@ -1,4 +1,4 @@
-import { ref, warn } from 'vue';
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import supabase from '../lib/supabase.js';
 
