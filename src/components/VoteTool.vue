@@ -2,15 +2,21 @@
   const props = defineProps({
     score: { type: Number, default: 0 }
   });
+
+  const emit = defineEmits([ 'vote' ]);
+
+  function vote(val) {
+    emit('vote', val);
+  }
 </script>
 
 <template>
   <div class="vote">
-    <button>+</button>
+    <button @click="vote(1)">+</button>
     <span class="val">
       {{ props.score }}
     </span>
-    <button>-</button>
+    <button @click="vote(-1)">-</button>
   </div>
 </template>
 

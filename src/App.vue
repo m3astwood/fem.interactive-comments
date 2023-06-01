@@ -10,34 +10,19 @@
 <template>
   <main v-if="store.loading">Loading...</main>
   <main v-else>
-    <CommentItem v-for="comment in store.comments" :key="comment.id" :score="comment.score">
-      <template v-slot:avatar>
-        <img :src="comment.user.avatar" :alt="`profile piture of ${comment.user.username}`">
-      </template>
-      <template v-slot:commenter>
-        {{ comment.user.username }}
-      </template>
-
-      <template v-slot:date>{{ comment.created_at }}</template>
-
-      <template v-slot:content>{{ comment.content }}</template>
-
-      <template v-slot:score>{{ comment.score }}</template>
+    <CommentItem 
+      v-for="comment in store.commentsScoreOrder" 
+      :key="comment.id" 
+      :comment="comment"
+      @vote="store.updateVote"
+    >
 
       <template v-if="comment.replies.length > 0" v-slot:replies>
-        <CommentItem v-for="reply in comment.replies" :key="reply.id" :score="reply.score">
-          <template v-slot:avatar>
-            <img :src="reply.user.avatar" :alt="`profile piture of ${reply.user.username}`">
-          </template>
-          <template v-slot:commenter>
-            {{ reply.user.username }}
-          </template>
-
-          <template v-slot:date>{{ reply.created_at }}</template>
-
-          <template v-slot:replyTo>{{ reply.replyingTo.username }}</template>
-          <template v-slot:content>{{ reply.content }}</template>
-        </CommentItem>
+        <CommentItem 
+          v-for="reply in comment.replies" 
+          :key="reply.id" 
+          :comment="reply"
+        />
       </template>
     </CommentItem>
   </main>

@@ -1,9 +1,12 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import supabase from '../lib/supabase.js';
 
 export const useCommentsStore = defineStore('comments', () => {
   const comments = ref([]);
+  const commentsScoreOrder = computed(() => {
+    return comments.value.sort((a, b) => parseInt(b.score) - parseInt(a.score));
+  });
   const loading = ref(false);
 
   const getAvatar = async (path) => {
@@ -21,7 +24,7 @@ export const useCommentsStore = defineStore('comments', () => {
     }
   };
 
-  async function getComments() {
+  const getComments = async () => {
     try {
       loading.value = true;
       const { data, error } = await supabase.from('comments').select(
@@ -51,6 +54,31 @@ export const useCommentsStore = defineStore('comments', () => {
     } finally {
       loading.value = false;
     }
-  }
-  return { getComments, comments, loading };
+  };
+
+  const updateVote = async (data) => {
+    console.log(data);
+    const { vote, comment } = data;
+    try {
+      console.log('from store : ' + vote);
+      const { data, error } = await supabase
+        .from('comments')
+        .update({ score: comment.score + vote })
+        .eq('id', comment.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const arrayIndex = comments.value.findIndex((comment) =>
+        comment.id == data.id
+      );
+
+      comments.value[arrayIndex].score = data.score;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return { getComments, comments, loading, updateVote, commentsScoreOrder };
 });

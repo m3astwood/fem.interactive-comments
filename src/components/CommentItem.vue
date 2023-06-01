@@ -5,9 +5,9 @@
   import ReplyIcon from '../assets/images/icon-reply.svg';
 
   const props = defineProps({
-    score: { type: Number }
+    comment: { type: Object }
   });
-  
+
   const slots = useSlots();
 
   function test() {
@@ -19,23 +19,23 @@
   <div class="comment">
     <header>
       <div class="logo">
-        <slot name="avatar"></slot>
+        <img :src="props.comment.user.avatar" :alt="`profile piture of ${comment.user.username}`">
       </div>
       <h3 class="commenter">
-        <slot name="commenter"></slot>
+        {{ props.comment.user.username }}
       </h3>
       <span class="date">
-        <slot name="date"></slot>
+        {{ props.comment.created_at }}
       </span>
     </header>
     <div class="content">
-      <span v-if="slots.replyTo" class="replyTo">
-        <slot name="replyTo"></slot>
+      <span v-if="props.comment.replyTo" class="replyTo">
+        {{ props.comment.replyTo }}
       </span>
-      <slot name="content"></slot>
+      {{ props.comment.content }}
     </div>
     <div class="controls">
-      <VoteTool :score="props.score" />
+      <VoteTool @vote="(val) => $emit('vote', { vote: val, comment })" :score="props.comment.score" />
       <ButtonText @click="test" :icon="ReplyIcon">Reply</ButtonText>
     </div>
   </div>
