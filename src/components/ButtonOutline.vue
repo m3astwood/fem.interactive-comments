@@ -23,7 +23,7 @@
     gap: 0.5em;
     border: var(--color) solid 1px;
     border-radius: 0.5em;
-    padding:0.75em 1.75em ;
+    padding:0.75em 1.5em ;
     background: none;
     cursor: pointer;
   }
