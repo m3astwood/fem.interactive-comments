@@ -8,7 +8,15 @@
     comment: { type: Object }
   });
 
+  const emit = defineEmits([ 'vote' ]);
+
+  console.log(props.comment);
+
   const slots = useSlots();
+
+  function vote(data) {
+    emit('vote', { vote: data, isReply: !!props.comment.replyingTo, comment: props.comment });
+  }
 
   function test() {
     console.log('click reply');
@@ -29,13 +37,13 @@
       </span>
     </header>
     <div class="content">
-      <span v-if="props.comment.replyTo" class="replyTo">
-        {{ props.comment.replyTo }}
+      <span v-if="props.comment.replyingTo" class="replyTo">
+        {{ props.comment.replyingTo.username }}
       </span>
       {{ props.comment.content }}
     </div>
     <div class="controls">
-      <VoteTool @vote="(val) => $emit('vote', { vote: val, comment })" :score="props.comment.score" />
+      <VoteTool @vote="vote" :score="props.comment.score" />
       <ButtonText @click="test" :icon="ReplyIcon">Reply</ButtonText>
     </div>
   </div>

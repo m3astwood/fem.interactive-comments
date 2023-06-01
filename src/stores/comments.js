@@ -4,9 +4,9 @@ import supabase from '../lib/supabase.js';
 
 export const useCommentsStore = defineStore('comments', () => {
   const comments = ref([]);
-  const commentsScoreOrder = computed(() => {
-    return comments.value.sort((a, b) => parseInt(b.score) - parseInt(a.score));
-  });
+  const commentsScoreOrder = computed(() =>
+    comments.value.sort((a, b) => parseInt(b.score) - parseInt(a.score))
+  );
   const loading = ref(false);
 
   const getAvatar = async (path) => {
@@ -56,25 +56,60 @@ export const useCommentsStore = defineStore('comments', () => {
     }
   };
 
-  const updateVote = async (data) => {
-    console.log(data);
-    const { vote, comment } = data;
+  const updateSingle = async (id, isReply = false) => {
     try {
-      console.log('from store : ' + vote);
+      const table = isReply ? 'replies' : 'comments';
+      // get updated comment and reply
       const { data, error } = await supabase
-        .from('comments')
-        .update({ score: comment.score + vote })
-        .eq('id', comment.id)
+        .from(table)
         .select()
+        .eq('id', id)
         .single();
 
       if (error) throw error;
 
-      const arrayIndex = comments.value.findIndex((comment) =>
-        comment.id == data.id
-      );
+      // if not a reply
+      if (!isReply) {
+        // find index of comment
+        const commentIdx = comments.value.findIndex((comment) =>
+          comment.id == data.id
+        );
 
-      comments.value[arrayIndex].score = data.score;
+        // update comment score
+        comments.value[commentIdx].score = data.score;
+      } else {
+        // find index of parent comment
+        const commentIdx = comments.value.findIndex((comment) =>
+          comment.id == data.comment_id
+        );
+
+        // find index of reply
+        const replyIdx = comments.value[commentIdx].replies.findIndex((reply) =>
+          reply.id == data.id
+        );
+
+        // update reply score
+        comments.value[commentIdx].replies[replyIdx].score = data.score;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const updateVote = async (event) => {
+    try {
+      console.log(event);
+      const { vote, isReply, comment } = event;
+
+      const table = isReply ? 'replies' : 'comments';
+      const { error } = await supabase
+        .from(table)
+        .update({ score: comment.score + vote })
+        .eq('id', comment.id);
+
+      if (error) throw error;
+
+      updateSingle(comment.id, isReply);
     } catch (err) {
       console.error(err);
     }

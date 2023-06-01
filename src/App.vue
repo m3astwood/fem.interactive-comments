@@ -22,6 +22,7 @@
           v-for="reply in comment.replies" 
           :key="reply.id" 
           :comment="reply"
+          @vote="store.updateVote"
         />
       </template>
     </CommentItem>
