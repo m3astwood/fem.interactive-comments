@@ -18,13 +18,11 @@ function closeModal() {
 <template>
   <div v-show="props.modelValue" class="backdrop">
     <div class="modal" ref="modal">
-      <h3>Delete Comment</h3>
-      <p>
-        Are you sure you want to delete this comment? This will remove the comment and can't be undone.
-      </p>
+      <slot name="content"></slot>
       <div class="controls">
-        <ButtonOutline variant="filled" @click="closeModal">no, cancel</ButtonOutline>
-        <ButtonOutline variant="filled" style="--color: red;" @click="">yes, delete</ButtonOutline>
+        <slot name="controls">
+          <ButtonOutline variant="filled" @click="closeModal">Cancel</ButtonOutline>
+        </slot>
       </div>
     </div>
   </div>
@@ -57,6 +55,13 @@ function closeModal() {
   .controls {
     display: flex;
     gap: 1em;
+  }
+
+  * ~ .controls {
     margin-block-start: 1em;
+  }
+
+  .controls button:only-of-type {
+    margin-inline-start: auto;
   }
 </style>

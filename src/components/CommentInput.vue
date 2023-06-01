@@ -1,6 +1,9 @@
 <script setup>
   import ButtonOutline from '../components/ButtonOutline.vue';
   
+  const props = defineProps({
+    user: Object
+  });
 </script>
 
 <template>
@@ -9,7 +12,7 @@
     
     <footer>
       <div class="avatar">
-        <img src="../assets/images/avatars/image-amyrobson.png" alt="amyrobson avatar">
+        <img v-if="props.user?.username" :src="props.user.avatar" :alt="`${props.user.username}'s avatar`">
       </div>
       <ButtonOutline variant="filled">Send</ButtonOutline>
     </footer>
@@ -31,6 +34,10 @@
 
   .avatar {
     width: 2em;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: grey;
+    border-radius: 100vmax;
   }
 
   textarea {
