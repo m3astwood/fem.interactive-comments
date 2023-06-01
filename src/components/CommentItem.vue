@@ -26,7 +26,7 @@
 <template>
   <div class="comment">
     <header>
-      <div class="logo">
+      <div class="avatar">
         <img :src="props.comment.user.avatar" :alt="`profile piture of ${comment.user.username}`">
       </div>
       <h3 class="commenter">
@@ -79,7 +79,7 @@ header {
   color: var(--prim-color);
 }
 
-.logo {
+.avatar {
   width: 2em;
 }
 
