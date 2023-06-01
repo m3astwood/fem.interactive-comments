@@ -1,6 +1,7 @@
 <script setup>
   import { useCommentsStore } from './stores/comments.js';
   import CommentItem from './components/CommentItem.vue';
+  import CommentInput from './components/CommentInput.vue';
 
   const store = useCommentsStore();
 
@@ -26,6 +27,8 @@
         />
       </template>
     </CommentItem>
+
+    <CommentInput />
   </main>
 </template>
 
