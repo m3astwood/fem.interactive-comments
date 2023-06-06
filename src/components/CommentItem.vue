@@ -6,22 +6,22 @@
   import DeleteIcon from '../assets/images/icon-delete.svg';
   import EditIcon from '../assets/images/icon-edit.svg';
 
+  import TA from '../lib/timeFormat.js';
+
   const props = defineProps({
     isYou: { type: Boolean, default: false },
     comment: Object 
   });
 
-
-  const emit = defineEmits([ 'vote', 'delete', 'edit', 'reply' ]);
-
   const slots = useSlots();
+  const emit = defineEmits([ 'vote', 'delete', 'edit', 'reply' ]);
 
   function vote(data) {
     emit('vote', { vote: data, isReply: !!props.comment.replyTo, comment: props.comment });
   }
 
   function reply() {
-    emit('reply', { id: props.comment.id, name: props.comment.user.username });
+    emit('reply', { id: props.comment.id, isReply: !!props.comment.replyTo, name: props.comment.user.username });
   }
 
   function remove() {
@@ -45,7 +45,7 @@
       </h3>
       <span v-if="isYou" class="you">you</span>
       <span class="date">
-        {{ props.comment.created_at }}
+        {{ TA(props.comment.created_at) }}
       </span>
     </header>
     <div class="content">

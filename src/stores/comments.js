@@ -3,11 +3,17 @@ import { defineStore } from 'pinia';
 import supabase from '../lib/supabase.js';
 
 export const useCommentsStore = defineStore('comments', () => {
+  const loading = ref(false);
+
   const comments = ref([]);
   const commentsScoreOrder = computed(() =>
     comments.value.sort((a, b) => parseInt(b.score) - parseInt(a.score))
   );
-  const loading = ref(false);
+
+  const replyRecipient = ref({});
+  const replyTo = (data) => {
+    replyRecipient.value = data;
+  };
 
   const getComments = async () => {
     try {
@@ -132,5 +138,7 @@ export const useCommentsStore = defineStore('comments', () => {
     commentsScoreOrder,
     submitComment,
     deleteComment,
+    replyTo,
+    replyRecipient,
   };
 });

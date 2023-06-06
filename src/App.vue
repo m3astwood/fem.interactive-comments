@@ -15,7 +15,6 @@
 
   const openModal = ref(false);
   const commentText = ref('');
-  const replyingTo = ref({});
 
   function toggleLoginModal() {
     openModal.value = !openModal.value;
@@ -24,10 +23,6 @@
   function login() {
     console.log('GO!');
     userStore.login();
-  }
-
-  function reply(replyData) {
-    replyingTo.value = replyData;
   }
 
   async function submitComment() {
@@ -48,7 +43,9 @@
     <a v-if="userStore.user?.username" href="#" @click.prevent="userStore.logout">logout {{ userStore.user.username }}</a>
     <a v-else href="#" @click.prevent="toggleLoginModal">login</a>
   </header>
+  
   <main v-if="commentStore.loading">Loading...</main>
+
   <main v-else>
     <CommentItem 
       v-for="comment in commentStore.commentsScoreOrder" 
@@ -57,7 +54,7 @@
       :isYou="userStore.user?.id == comment.user.id"
       @vote="commentStore.updateVote"
       @delete="commentStore.deleteComment"
-      @reply="reply"
+      @reply="commentStore.replyTo"
     >
 
       <template v-if="comment.replies?.length > 0" v-slot:replies>
@@ -65,15 +62,15 @@
           v-for="reply in comment.replies" 
           :key="reply.id" 
           :comment="reply"
-          :isYou="userStore.user?.id == comment.user.id"
+          :isYou="userStore.user?.id == reply.user.id"
           @vote="commentStore.updateVote"
           @delete="commentStore.deleteComment"
-          @reply="reply"
+          @reply="commentStore.replyTo"
         />
       </template>
     </CommentItem>
 
-    <CommentInput @submit="submitComment" :replying="replyingTo" v-model="commentText" v-if="userStore.user?.username" :user="userStore.user" />
+    <CommentInput @submit="submitComment" @cancelReply="commentStore.replyRecipient = {}" :replying="commentStore.replyRecipient" v-model="commentText" v-if="userStore.user?.username" :user="userStore.user" />
   </main>
 
   <DialogModal v-model="openModal">

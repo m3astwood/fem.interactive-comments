@@ -7,12 +7,12 @@
     user: Object
   });
 
-  defineEmits([ 'submit', 'update:modelValue' ]);
+  defineEmits([ 'submit', 'cancelReply', 'update:modelValue' ]);
 </script>
 
 <template>
   <div class="comment">
-    <div v-show="props.replying?.name" class="replying">@{{ props.replying?.name }}</div>
+    <div v-show="props.replying?.name" class="replying">@{{ props.replying?.name }} <a href="#" @click.prevent="$emit('cancelReply')">x</a></div>
     <textarea rows="3" placeholder="Add a comment..." @change="$emit('update:modelValue', $event.target.value)" :value="modelValue"></textarea>
     
     <footer>
@@ -41,6 +41,11 @@
     margin-block-end: 0.5em;
     color: var(--highlight-color);
     font-weight: 500;
+  }
+
+  .replying > a {
+    text-decoration: none;
+    color: var(--secondary-color);
   }
 
   .avatar {
