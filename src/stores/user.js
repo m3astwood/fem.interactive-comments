@@ -35,9 +35,14 @@ export const useUserStore = defineStore('user', () => {
     try {
       const { data } = await supabase.auth.getUser();
 
-      const { id, user_metadata: { user_name, avatar_url } } = data.user;
+      if (data.user) {
+        const { id, user_metadata: { user_name, avatar_url } } = data.user;
 
-      user.value = { id, username: user_name, avatar: avatar_url };
+        user.value = { id, username: user_name, avatar: avatar_url };
+      } else {
+        user.value = {};
+      }
+
       console.log(user.value);
     } catch (err) {
       console.error(err);

@@ -9,43 +9,16 @@ export const useCommentsStore = defineStore('comments', () => {
   );
   const loading = ref(false);
 
-  const getAvatar = async (path) => {
-    try {
-      const { data, error } = await supabase
-        .storage
-        .from('interactive-comments')
-        .createSignedUrl(path, 60);
-
-      if (error) throw error;
-
-      return data.signedUrl;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const getComments = async () => {
     try {
       loading.value = true;
       const { data, error } = await supabase.from('comments').select(
-        '*, user:users( * ), replies( *, replyingTo:users!replies_replyingTo_fkey( * ), user:users!replies_user_fkey( * ) ) )',
+        '*, user:users( * ), replies( *, replyTo:users!replies_replyTo_id_fkey( * ), user:users!replies_user_id_fkey( * ) ) )',
       );
 
       if (error) {
         throw error;
       }
-
-      await Promise.all(data.map(async (comment) => {
-        comment.user.avatar = await getAvatar(comment.user.avatar);
-
-        if (comment.replies.length > 0) {
-          await Promise.all(
-            comment.replies.map(async (reply) =>
-              reply.user.avatar = await getAvatar(reply.user.avatar)
-            ),
-          );
-        }
-      }));
 
       comments.value = data;
     } catch (err) {
@@ -96,9 +69,45 @@ export const useCommentsStore = defineStore('comments', () => {
     }
   };
 
+  const submitComment = async (comment) => {
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .insert({
+          content: comment.text,
+          user_id: comment.user.id,
+        })
+        .select('*, user:user_id(*)')
+        .single();
+
+      if (error) throw error;
+
+      comments.value = [...comments.value, data];
+    } catch (err) {
+      console.error(err);
+      return { error: err };
+    }
+  };
+
+  const deleteComment = async (id) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      const idx = comments.value.findIndex((comment) => comment.id == id);
+
+      comments.value.splice(idx, 1);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const updateVote = async (event) => {
     try {
-      console.log(event);
       const { vote, isReply, comment } = event;
 
       const table = isReply ? 'replies' : 'comments';
@@ -115,5 +124,13 @@ export const useCommentsStore = defineStore('comments', () => {
     }
   };
 
-  return { getComments, comments, loading, updateVote, commentsScoreOrder };
+  return {
+    getComments,
+    comments,
+    loading,
+    updateVote,
+    commentsScoreOrder,
+    submitComment,
+    deleteComment,
+  };
 });

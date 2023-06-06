@@ -3,23 +3,34 @@
   import VoteTool from './VoteTool.vue';
   import ButtonText from './ButtonText.vue';
   import ReplyIcon from '../assets/images/icon-reply.svg';
+  import DeleteIcon from '../assets/images/icon-delete.svg';
+  import EditIcon from '../assets/images/icon-edit.svg';
 
   const props = defineProps({
-    comment: { type: Object }
+    isYou: { type: Boolean, default: false },
+    comment: Object 
   });
 
-  const emit = defineEmits([ 'vote' ]);
 
-  console.log(props.comment);
+  const emit = defineEmits([ 'vote', 'delete', 'edit', 'reply' ]);
 
   const slots = useSlots();
 
   function vote(data) {
-    emit('vote', { vote: data, isReply: !!props.comment.replyingTo, comment: props.comment });
+    emit('vote', { vote: data, isReply: !!props.comment.replyTo, comment: props.comment });
   }
 
-  function test() {
-    console.log('click reply');
+  function reply() {
+    emit('reply', { id: props.comment.id, name: props.comment.user.username });
+  }
+
+  function remove() {
+    emit('delete', props.comment.id);
+  }
+
+  function edit() {
+    console.log('click edit');
+    emit('edit', {});
   }
 </script>
 
@@ -32,19 +43,23 @@
       <h3 class="commenter">
         {{ props.comment.user.username }}
       </h3>
+      <span v-if="isYou" class="you">you</span>
       <span class="date">
         {{ props.comment.created_at }}
       </span>
     </header>
     <div class="content">
-      <span v-if="props.comment.replyingTo" class="replyTo">
-        {{ props.comment.replyingTo.username }}
+      <span v-if="props.comment.replyTo" class="replyTo">
+        {{ props.comment.replyTo.username }}
       </span>
       {{ props.comment.content }}
     </div>
     <div class="controls">
-      <VoteTool @vote="vote" :score="props.comment.score" />
-      <ButtonText @click="test" :icon="ReplyIcon">Reply</ButtonText>
+      <VoteTool @vote="vote" :score="props.comment.score" style="margin-inline-end: auto;"/>
+      <ButtonText v-show="!isYou" @click="reply" :icon="ReplyIcon">Reply</ButtonText>
+      <ButtonText v-show="isYou" @click="remove" :icon="DeleteIcon" style="--color: red;">Delete</ButtonText>
+      <ButtonText v-show="isYou" @click="edit" :icon="EditIcon">Edit</ButtonText>
+
     </div>
   </div>
 
@@ -69,7 +84,7 @@
 header {
   display: flex;
   align-items: center;
-  gap: 1em;
+  gap: 0.5em;
   margin-block-end: 1em;
 }
 
@@ -77,10 +92,22 @@ header {
   font-size: 1em;
   font-weight: 500;
   color: var(--prim-color);
+  margin-inline-start: 0.25em;
+}
+
+.you {
+  background-color: var(--highlight-color);
+  color: white;
+  padding-inline: 0.5em;
+  padding-block: 0.125em 0.25em;
+  border-radius: 0.25em;
+  font-size: 0.8em;
 }
 
 .avatar {
   width: 2em;
+  border-radius: 100vmax;
+  overflow: hidden;
 }
 
 .content {
@@ -89,10 +116,7 @@ header {
 
 .controls {
   display: flex;
-}
-
-.controls > button:first-of-type {
-  margin-inline-start: auto;
+  gap: 0.5em;
 }
 
 .replies {

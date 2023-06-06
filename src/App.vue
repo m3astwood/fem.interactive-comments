@@ -14,7 +14,8 @@
   commentStore.getComments();
 
   const openModal = ref(false);
-
+  const commentText = ref('');
+  const replyingTo = ref({});
 
   function toggleLoginModal() {
     openModal.value = !openModal.value;
@@ -23,6 +24,22 @@
   function login() {
     console.log('GO!');
     userStore.login();
+  }
+
+  function reply(replyData) {
+    replyingTo.value = replyData;
+  }
+
+  async function submitComment() {
+    try {
+      const { error } = commentStore.submitComment({ user: userStore.user, text: commentText.value }); 
+
+      if (error) throw error;
+
+      commentText.value = '';
+    } catch (err) {
+      console.error(err);
+    }
   }
 </script>
 
@@ -37,20 +54,26 @@
       v-for="comment in commentStore.commentsScoreOrder" 
       :key="comment.id" 
       :comment="comment"
+      :isYou="userStore.user?.id == comment.user.id"
       @vote="commentStore.updateVote"
+      @delete="commentStore.deleteComment"
+      @reply="reply"
     >
 
-      <template v-if="comment.replies.length > 0" v-slot:replies>
+      <template v-if="comment.replies?.length > 0" v-slot:replies>
         <CommentItem 
           v-for="reply in comment.replies" 
           :key="reply.id" 
           :comment="reply"
+          :isYou="userStore.user?.id == comment.user.id"
           @vote="commentStore.updateVote"
+          @delete="commentStore.deleteComment"
+          @reply="reply"
         />
       </template>
     </CommentItem>
 
-    <CommentInput v-if="userStore.user?.username" :user="userStore.user" />
+    <CommentInput @submit="submitComment" :replying="replyingTo" v-model="commentText" v-if="userStore.user?.username" :user="userStore.user" />
   </main>
 
   <DialogModal v-model="openModal">
@@ -61,7 +84,6 @@
     <template v-slot:controls>
       <ButtonOutline variant="filled" @click="toggleLoginModal">Cancel</ButtonOutline>
       <ButtonOutline variant="filled" @click="login">Login</ButtonOutline>
-
     </template>
   </DialogModal>
 </template>
