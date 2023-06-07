@@ -41,15 +41,9 @@ function closeModal() {
   .modal {
     display: block;
     background-color: white;
-    padding: 1em;
+    padding: 1.5em;
     width: min(100% - 2em, 400px);
     border-radius: 0.5em;
-  }
-
-  h3 {
-    color: black;
-    font-weight: 500;
-    margin-block-end: 0.5em;
   }
 
   .controls {

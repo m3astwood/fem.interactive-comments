@@ -1,10 +1,12 @@
 <script setup>
-  import { useSlots } from 'vue';
+  import { useSlots, ref } from 'vue';
   import VoteTool from './VoteTool.vue';
   import ButtonText from './ButtonText.vue';
   import ReplyIcon from '../assets/images/icon-reply.svg';
   import DeleteIcon from '../assets/images/icon-delete.svg';
   import EditIcon from '../assets/images/icon-edit.svg';
+  import DialogModal from './DialogModal.vue';
+  import ButtonOutline from './ButtonOutline.vue';
 
   import TA from '../lib/timeFormat.js';
 
@@ -16,6 +18,7 @@
   const slots = useSlots();
   const emit = defineEmits([ 'vote', 'delete', 'edit', 'reply' ]);
 
+  const openModal = ref(false);
   function vote(data) {
     emit('vote', { vote: data, isReply: !!props.comment.replyTo, comment: props.comment });
   }
@@ -32,9 +35,24 @@
     console.log('click edit');
     emit('edit', {});
   }
+
+  function toggleModal() {
+    openModal.value = !openModal.value;
+  }
 </script>
 
 <template>
+  <DialogModal v-model="openModal">
+    <template v-slot:content>
+      <h3>Delete comment</h3>
+      <p>Are you sure you want to delete this comment? This will remove the comment and can't be undone.</p>
+    </template>
+
+    <template v-slot:controls>
+      <ButtonOutline variant="filled" @click="toggleModal">No, Cancel</ButtonOutline>
+      <ButtonOutline variant="filled" @click="remove" style="--color: red;">Yes, Delete</ButtonOutline>
+    </template>
+  </DialogModal>
   <div class="comment">
     <header>
       <div class="avatar">
@@ -57,7 +75,7 @@
     <div class="controls">
       <VoteTool @vote="vote" :score="props.comment.score" style="margin-inline-end: auto;"/>
       <ButtonText v-show="!isYou" @click="reply" :icon="ReplyIcon">Reply</ButtonText>
-      <ButtonText v-show="isYou" @click="remove" :icon="DeleteIcon" style="--color: red;">Delete</ButtonText>
+      <ButtonText v-show="isYou" @click="toggleModal()" :icon="DeleteIcon" style="--color: red;">Delete</ButtonText>
       <ButtonText v-show="isYou" @click="edit" :icon="EditIcon">Edit</ButtonText>
 
     </div>
@@ -149,5 +167,11 @@ header {
 
 .replyTo::after {
   content: ' ';
+}
+
+h3 {
+  color: black;
+  font-weight: 500;
+  margin-block-end: 0.5em;
 }
 </style>
