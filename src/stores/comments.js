@@ -77,12 +77,27 @@ export const useCommentsStore = defineStore('comments', () => {
 
   const submitComment = async (comment) => {
     try {
-      const { data, error } = await supabase
-        .from('comments')
-        .insert({
+      console.log(comment);
+
+      const table = comment.reply ? 'replies' : 'comments';
+      let insertData = {};
+
+      if (table == 'replies') {
+        insertData = {
+          comment_id: comment.reply.id,
+          replyTo_id: comment.reply.user.id,
           content: comment.text,
           user_id: comment.user.id,
-        })
+        };
+      } else {
+        insertData = {
+          content: comment.text,
+          user_id: comment.user.id,
+        };
+      }
+      const { data, error } = await supabase
+        .from(table)
+        .insert(insertData)
         .select('*, user:user_id(*)')
         .single();
 
@@ -92,6 +107,21 @@ export const useCommentsStore = defineStore('comments', () => {
     } catch (err) {
       console.error(err);
       return { error: err };
+    }
+  };
+
+  const submitReply = async (reply) => {
+    try {
+      const { data, error } = await supabase
+        .from('replies')
+        .insert({
+          content: reply.text,
+          user_id: reply.user.id,
+        });
+
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -137,6 +167,7 @@ export const useCommentsStore = defineStore('comments', () => {
     updateVote,
     commentsScoreOrder,
     submitComment,
+    submitReply,
     deleteComment,
     replyTo,
     replyRecipient,

@@ -28,7 +28,11 @@
 
   async function submitComment() {
     try {
-      const { error } = commentStore.submitComment({ user: userStore.user, text: commentText.value }); 
+      const { error } = commentStore.submitComment({ 
+        user: userStore.user, 
+        text: commentText.value,
+        reply: commentStore.replyRecipient
+      }); 
 
       if (error) throw error;
 
@@ -71,7 +75,14 @@
       </template>
     </CommentItem>
 
-    <CommentInput @submit="submitComment" @cancelReply="commentStore.replyRecipient = {}" :replying="commentStore.replyRecipient" v-model="commentText" v-if="userStore.user?.username" :user="userStore.user" />
+    <CommentInput 
+      @submit="submitComment" 
+      @cancelReply="commentStore.replyRecipient = {}" 
+      :replying="commentStore.replyRecipient" 
+      v-model="commentText" 
+      v-if="userStore.user?.username" 
+      :user="userStore.user" 
+    />
   </main>
 
   <DialogModal v-model="openModal">

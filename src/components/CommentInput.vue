@@ -12,7 +12,12 @@
 
 <template>
   <div class="comment">
-    <div v-show="props.replying?.name" class="replying">@{{ props.replying?.name }} <a href="#" @click.prevent="$emit('cancelReply')">x</a></div>
+    <div 
+      v-show="props.replying?.user" 
+      class="replying"
+    >@{{ props.replying?.user?.username }} 
+      <a href="#" @click.prevent="$emit('cancelReply')">x</a>
+    </div>
     <textarea rows="3" placeholder="Add a comment..." @change="$emit('update:modelValue', $event.target.value)" :value="modelValue"></textarea>
     
     <footer>

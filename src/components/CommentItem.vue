@@ -19,12 +19,14 @@
   const emit = defineEmits([ 'vote', 'delete', 'edit', 'reply' ]);
 
   const openModal = ref(false);
+
   function vote(data) {
     emit('vote', { vote: data, isReply: !!props.comment.replyTo, comment: props.comment });
   }
 
   function reply() {
-    emit('reply', { id: props.comment.id, isReply: !!props.comment.replyTo, name: props.comment.user.username });
+    const id = props.comment.replyTo ? props.comment.comment_id : props.comment.id;
+    emit('reply', { id, user: props.comment.user });
   }
 
   function remove() {
@@ -32,7 +34,6 @@
   }
 
   function edit() {
-    console.log('click edit');
     emit('edit', {});
   }
 
